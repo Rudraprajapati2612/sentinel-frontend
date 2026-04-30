@@ -4,6 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { ARCHITECTURE_LAYERS, CONNECTOR_LABELS } from '@/lib/constants';
 
+const ARCH_COLORS = [
+  '#1E2D5A', // 0: solana
+  '#2A4A8F', // 1: grpc
+  '#3460C0', // 2: parser
+  '#4A7ED4', // 3: engine
+  '#7AAEE8', // 4: responder
+  '#B8D4F5', // 5: dashboard
+];
+
 const ACCORDION_CONTENT: Record<string, any> = {
   solana: {
     description: "The foundation of every detection. SentinelGuard connects directly to a local Solana validator, receiving every block at the native ~400ms slot cadence via the Geyser WebSocket plugin. No API rate limits. No polling delays. Every transaction touching the monitored protocol is seen in real time.",
@@ -175,17 +184,17 @@ export default function Architecture() {
           }
           .arch-right-column {
             flex: 0 0 calc(45% - 64px);
-            padding-bottom: 40vh; /* Allow scrolling past the last item */
+            padding-bottom: 40vh;
           }
         }
 
         /* Layer Variables mapped to step index */
-        .arch-layer-0 { --layer-color: #1e3a8a; --layer-glow: rgba(30, 58, 138, 0.2); --badge-bg: rgba(30, 58, 138, 0.12); --badge-border: rgba(30, 58, 138, 0.35); --badge-text: #1e3a8a; }
-        .arch-layer-1 { --layer-color: #2563eb; --layer-glow: rgba(37, 99, 235, 0.2); --badge-bg: rgba(37, 99, 235, 0.12); --badge-border: rgba(37, 99, 235, 0.35); --badge-text: #1e40af; }
-        .arch-layer-2 { --layer-color: #3b82f6; --layer-glow: rgba(59, 130, 246, 0.2); --badge-bg: rgba(59, 130, 246, 0.12); --badge-border: rgba(59, 130, 246, 0.35); --badge-text: #1d4ed8; }
-        .arch-layer-3 { --layer-color: #60a5fa; --layer-glow: rgba(96, 165, 250, 0.2); --badge-bg: rgba(96, 165, 250, 0.12); --badge-border: rgba(96, 165, 250, 0.35); --badge-text: #1d4ed8; }
-        .arch-layer-4 { --layer-color: #93c5fd; --layer-glow: rgba(147, 197, 253, 0.2); --badge-bg: rgba(147, 197, 253, 0.12); --badge-border: rgba(147, 197, 253, 0.35); --badge-text: #1e40af; }
-        .arch-layer-5 { --layer-color: #bfdbfe; --layer-glow: rgba(191, 219, 254, 0.2); --badge-bg: rgba(191, 219, 254, 0.12); --badge-border: rgba(191, 219, 254, 0.35); --badge-text: #1e3a8a; }
+        .arch-layer-0 { --layer-color: #1E2D5A; --layer-glow: rgba(30, 45, 90, 0.2); --badge-bg: rgba(30, 45, 90, 0.12); --badge-border: rgba(30, 45, 90, 0.35); --badge-text: #1E2D5A; }
+        .arch-layer-1 { --layer-color: #2A4A8F; --layer-glow: rgba(42, 74, 143, 0.2); --badge-bg: rgba(42, 74, 143, 0.12); --badge-border: rgba(42, 74, 143, 0.35); --badge-text: #2A4A8F; }
+        .arch-layer-2 { --layer-color: #3460C0; --layer-glow: rgba(52, 96, 192, 0.2); --badge-bg: rgba(52, 96, 192, 0.12); --badge-border: rgba(52, 96, 192, 0.35); --badge-text: #3460C0; }
+        .arch-layer-3 { --layer-color: #4A7ED4; --layer-glow: rgba(74, 126, 212, 0.2); --badge-bg: rgba(74, 126, 212, 0.12); --badge-border: rgba(74, 126, 212, 0.35); --badge-text: #4A7ED4; }
+        .arch-layer-4 { --layer-color: #7AAEE8; --layer-glow: rgba(122, 174, 232, 0.2); --badge-bg: rgba(122, 174, 232, 0.12); --badge-border: rgba(122, 174, 232, 0.35); --badge-text: #1E2D5A; }
+        .arch-layer-5 { --layer-color: #B8D4F5; --layer-glow: rgba(184, 212, 245, 0.2); --badge-bg: rgba(184, 212, 245, 0.12); --badge-border: rgba(184, 212, 245, 0.35); --badge-text: #1E2D5A; }
 
         /* Diagram Stack */
         .arch-diagram-stack {
@@ -201,7 +210,7 @@ export default function Architecture() {
           max-width: 420px;
           position: relative;
           z-index: 2;
-          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: opacity 200ms ease, filter 200ms ease, transform 200ms ease;
           cursor: pointer;
         }
 
@@ -213,14 +222,22 @@ export default function Architecture() {
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          background-color: var(--layer-color);
-          background-image: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.12) 100%);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-right-color: transparent;
-          border-bottom-color: transparent;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25);
-          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 2px solid transparent;
+          transition: all 200ms ease;
           text-align: center;
+          
+          /* 3D Depth and Highlight */
+          box-shadow: 
+            inset 0 1px 0 rgba(255,255,255,0.35),
+            inset 0 -1px 0 rgba(0,0,0,0.2),
+            0 4px 14px rgba(0,0,0,0.18);
+          
+          background: linear-gradient(
+            135deg, 
+            color-mix(in srgb, var(--layer-color) 80%, white) 0%,
+            var(--layer-color) 50%,
+            color-mix(in srgb, var(--layer-color) 90%, black) 100%
+          );
         }
 
         .arch-layer-label {
@@ -231,31 +248,33 @@ export default function Architecture() {
           font-size: 13px;
           margin-bottom: 4px;
           text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-          transition: all 0.3s ease;
+          transition: all 200ms ease;
         }
 
         .arch-layer-sublabel {
           font-family: 'JetBrains Mono', monospace;
           font-size: 10px;
           color: rgba(255, 255, 255, 0.65);
-          transition: all 0.3s ease;
+          transition: all 200ms ease;
         }
 
         /* Adjust text color for light layers */
         .arch-layer-node.arch-layer-4 .arch-layer-label,
         .arch-layer-node.arch-layer-5 .arch-layer-label {
-          color: #0f172a;
+          color: #1E2D5A;
           text-shadow: none;
         }
         .arch-layer-node.arch-layer-4 .arch-layer-sublabel,
         .arch-layer-node.arch-layer-5 .arch-layer-sublabel {
-          color: rgba(15, 23, 42, 0.65);
+          color: #1E2D5A;
+          opacity: 0.8;
         }
 
         /* Active State Logic for Nodes */
         .arch-diagram-stack.has-active .arch-layer-node:not(.active) {
-          opacity: 0.65;
-          filter: blur(0.3px);
+          opacity: 0.52;
+          filter: brightness(0.72) saturate(0.8);
+          transform: scale(0.988);
         }
 
         .arch-diagram-stack.has-active .arch-layer-node.active {
@@ -265,91 +284,30 @@ export default function Architecture() {
         }
 
         .arch-layer-node.active .arch-layer-slab {
-          box-shadow: 0 4px 20px rgba(0,0,0,0.2), 
-                      inset 0 1px 0 rgba(255,255,255,0.4),
-                      0 0 0 2px #fff, 
-                      0 0 20px var(--layer-color);
-          transform: translateY(-3px) scale(1.01);
+          box-shadow:
+            0 0 0 1.5px white,
+            0 0 0 3.5px color-mix(in srgb, var(--layer-color) 50%, transparent),
+            0 0 32px color-mix(in srgb, var(--layer-color) 60%, transparent),
+            0 10px 28px rgba(0,0,0,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.4);
+          transform: translateY(-4px) scale(1.012);
         }
 
         /* Connectors (Arrows) */
         .arch-connector {
           position: relative;
-          height: 48px;
-          width: 2px;
-          margin: 0 auto;
-          background-color: var(--layer-color);
-          opacity: 0.7;
-          z-index: 1;
-          transition: opacity 0.35s ease;
-          --particle-opacity: 0.3; /* Ambient state */
-        }
-
-        /* Arrowhead pointing UP */
-        .arch-connector::after {
-          content: '';
-          position: absolute;
-          top: -1px;
-          left: -4px;
-          width: 0; 
-          height: 0; 
-          border-left: 5px solid transparent;
-          border-right: 5px solid transparent;
-          border-bottom: 6px solid var(--layer-color);
-        }
-
-        .arch-connector-label {
-          position: absolute;
-          left: 20px;
-          top: 50%;
-          transform: translateY(-50%);
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 10px;
-          color: #94a3b8;
-          white-space: nowrap;
-        }
-
-        /* Active Connectors */
-        .arch-connector.active {
-          --particle-opacity: 0.9;
-          opacity: 1;
-        }
-
-        .arch-diagram-stack.has-active .arch-connector:not(.active) {
-          opacity: 0.3;
-        }
-
-        /* Particles */
-        .arch-particle-wrap {
-          position: absolute;
-          left: -1px;
-          width: 4px;
-          height: 4px;
-          opacity: var(--particle-opacity);
-          transition: opacity 0.35s ease;
-        }
-
-        .arch-particle-inner {
+          height: 52px;
           width: 100%;
-          height: 100%;
-          background: #fff;
-          border-radius: 50%;
-          box-shadow: 0 0 6px #fff;
-          animation: archParticleFlowUp 1.2s infinite linear;
-        }
-
-        @keyframes archParticleFlowUp {
-          0% { transform: translateY(48px); opacity: 0; }
-          20% { opacity: 1; }
-          80% { opacity: 1; }
-          100% { transform: translateY(0); opacity: 0; }
+          max-width: 420px;
+          margin: 0 auto;
+          z-index: 1;
         }
 
         /* Accordion Styles */
         .arch-accordion-item {
           border-top: 1px solid #d1d9ee;
           margin-top: -1px;
-          transition: all 0.35s ease;
+          transition: all 200ms ease;
           cursor: pointer;
           background: transparent;
           position: relative;
@@ -379,7 +337,7 @@ export default function Architecture() {
           border-radius: 50%;
           background-color: var(--layer-color);
           margin-right: 12px;
-          transition: all 0.35s ease;
+          transition: all 200ms ease;
         }
 
         .arch-acc-title {
@@ -393,7 +351,7 @@ export default function Architecture() {
 
         .arch-acc-chevron {
           color: #94a3b8;
-          transition: transform 0.3s ease;
+          transition: transform 200ms ease;
         }
 
         /* Active Accordion Item */
@@ -411,7 +369,7 @@ export default function Architecture() {
           top: 0;
           bottom: 0;
           width: 3px;
-          background-color: var(--layer-color);
+          background-color: #2563eb;
         }
 
         .arch-accordion-item.active .arch-acc-dot {
@@ -427,7 +385,7 @@ export default function Architecture() {
         .arch-accordion-content-wrapper {
           display: grid;
           grid-template-rows: 0fr;
-          transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: grid-template-rows 280ms ease;
         }
         
         .arch-accordion-item.active .arch-accordion-content-wrapper {
@@ -502,11 +460,10 @@ export default function Architecture() {
         <div className="arch-left-column">
           <div className={`arch-diagram-stack ${activeStep !== null ? 'has-active' : ''}`}>
             
-            {[...ARCHITECTURE_LAYERS].reverse().map((layer, reversedIdx) => {
-              const idx = ARCHITECTURE_LAYERS.length - 1 - reversedIdx;
+            {ARCHITECTURE_LAYERS.map((layer, idx) => {
               const isActive = idx === activeStep;
-              // Connected is true if either the target (idx) or source (idx - 1) is active
-              const isConnected = isActive || (activeStep === idx - 1);
+              const isConnectorActive = activeStep !== null && (activeStep === idx || activeStep === idx + 1);
+              const color = ARCH_COLORS[idx];
               
               return (
                 <div key={layer.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
@@ -520,13 +477,68 @@ export default function Architecture() {
                     </div>
                   </div>
 
-                  {/* Render Connector IF there is a layer below this one (idx > 0) */}
-                  {idx > 0 && (
-                    <div className={`arch-connector arch-layer-${idx} ${isConnected ? 'active' : ''}`}>
-                      <div className="arch-particle-wrap" style={{ animationDelay: '0s' }}><div className="arch-particle-inner"></div></div>
-                      <div className="arch-particle-wrap" style={{ animationDelay: '0.4s' }}><div className="arch-particle-inner"></div></div>
-                      <div className="arch-particle-wrap" style={{ animationDelay: '0.8s' }}><div className="arch-particle-inner"></div></div>
-                      <div className="arch-connector-label">{CONNECTOR_LABELS[idx - 1 as keyof typeof CONNECTOR_LABELS]}</div>
+                  {/* Render Connector IF there is a layer below this one */}
+                  {idx < ARCHITECTURE_LAYERS.length - 1 && (
+                    <div className="arch-connector">
+                      <svg width="40" height="52" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', overflow: 'visible' }}>
+                        <defs>
+                          <linearGradient id={`g-connector-${idx}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={color} stopOpacity="0.7"/>
+                            <stop offset="100%" stopColor={color} stopOpacity="0.3"/>
+                          </linearGradient>
+                          <path id={`p-connector-${idx}`} d="M 20 0 L 20 44"/>
+                        </defs>
+                        
+                        {/* Main line - solid gradient */}
+                        <line x1="20" y1="0" x2="20" y2="44"
+                          stroke={`url(#g-connector-${idx})`}
+                          strokeWidth={isConnectorActive ? 2.5 : 1.8}
+                          strokeLinecap="round"
+                          style={{ transition: 'all 0.3s ease' }}
+                        />
+                        
+                        {/* Arrowhead */}
+                        <polygon points="20,52 15,42 25,42"
+                          fill={color}
+                          opacity={isConnectorActive ? 0.9 : 0.5}
+                          style={{ transition: 'all 0.3s ease' }}
+                        />
+                        
+                        {/* Flowing particles - only visible when active */}
+                        {isConnectorActive && (
+                          <>
+                            <circle r="2.5" fill="white" opacity="0.95" style={{ filter: 'drop-shadow(0 0 3px white)' }}>
+                              <animateMotion dur="1.2s" repeatCount="indefinite" begin="0s">
+                                <mpath href={`#p-connector-${idx}`}/>
+                              </animateMotion>
+                            </circle>
+                            <circle r="2" fill="white" opacity="0.75">
+                              <animateMotion dur="1.2s" repeatCount="indefinite" begin="0.4s">
+                                <mpath href={`#p-connector-${idx}`}/>
+                              </animateMotion>
+                            </circle>
+                            <circle r="1.5" fill="white" opacity="0.5">
+                              <animateMotion dur="1.2s" repeatCount="indefinite" begin="0.8s">
+                                <mpath href={`#p-connector-${idx}`}/>
+                              </animateMotion>
+                            </circle>
+                          </>
+                        )}
+                      </svg>
+                      
+                      <span style={{
+                        position: 'absolute',
+                        left: 'calc(50% + 14px)',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        fontFamily: 'monospace',
+                        fontSize: 10,
+                        color: isConnectorActive ? color : '#94a3b8',
+                        whiteSpace: 'nowrap',
+                        transition: 'color 0.3s ease'
+                      }}>
+                        {CONNECTOR_LABELS[idx as keyof typeof CONNECTOR_LABELS]}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -538,7 +550,7 @@ export default function Architecture() {
         {/* RIGHT PANEL: Accordion */}
         <div className="arch-right-column">
           <div className="arch-accordion">
-            {[...ARCHITECTURE_LAYERS].reverse().map((layer) => {
+            {ARCHITECTURE_LAYERS.map((layer) => {
               const idx = layer.stepIndex;
               const isActive = idx === activeStep;
               const content = ACCORDION_CONTENT[layer.id];
@@ -587,4 +599,3 @@ export default function Architecture() {
     </section>
   );
 }
-
