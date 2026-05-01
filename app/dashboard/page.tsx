@@ -1,16 +1,25 @@
-import Link from 'next/link';
+import StatsRow from '@/components/dashboard/StatsRow';
+import TVLChart from '@/components/dashboard/TVLChart';
+import AlertFeed from '@/components/dashboard/AlertFeed';
+import ProtocolPanel from '@/components/dashboard/ProtocolPanel';
+import AlertTable from '@/components/dashboard/AlertTable';
 
-export default function DashboardStub() {
+export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-base py-32 px-6 text-center flex flex-col items-center justify-center">
-      <h1 className="font-display text-4xl font-bold mb-4 text-primary">Dashboard</h1>
-      <p className="text-secondary max-w-xl mb-8">
-        The dashboard view is simulated for this demo. The actual SentinelGuard integration 
-        would display live protocol data.
-      </p>
-      <Link href="/" className="px-6 py-3 bg-brand-primary text-white rounded-xl font-medium">
-        &larr; Back to Landing Page
-      </Link>
+    <div className="pb-16 flex flex-col gap-2">
+      <StatsRow />
+      <TVLChart />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pt-2">
+        <div className="lg:col-span-7 xl:col-span-7 2xl:col-span-8 h-full">
+          <AlertFeed />
+        </div>
+        <div className="lg:col-span-5 xl:col-span-5 2xl:col-span-4 h-full">
+          <ProtocolPanel />
+        </div>
+      </div>
+      
+      <AlertTable />
     </div>
   );
 }
