@@ -2,7 +2,7 @@ import Navbar from '@/components/landing/Navbar';
 import Hero from '@/components/landing/Hero';
 import Stats from '@/components/landing/Stats';
 import HowItWorks from '@/components/landing/HowItWorks';
-import Architecture from '@/components/landing/Architecture';
+import ArchitectureSection from '@/components/landing/Architecture';
 import ProvenInTesting from '@/components/landing/ProvenInTesting';
 import Footer from '@/components/landing/Footer';
 
@@ -14,7 +14,7 @@ export default function Home() {
         <Hero />
         <Stats />
         <HowItWorks />
-        <Architecture />
+        <ArchitectureSection />
         <ProvenInTesting />
       </main>
       <Footer />
