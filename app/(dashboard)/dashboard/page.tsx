@@ -25,12 +25,10 @@ export default function DashboardPage() {
       </header>
 
       <StatsRow />
-      <TVLChart />
       
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pt-2">
-        <div className="lg:col-span-12 h-full">
-          <AlertFeed />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 mt-6 items-start">
+        <TVLChart />
+        <AlertFeed />
       </div>
     </div>
   );

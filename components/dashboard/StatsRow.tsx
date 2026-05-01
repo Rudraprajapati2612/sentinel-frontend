@@ -14,7 +14,7 @@ export default function StatsRow() {
       value: "2",
       subtitle: "1 TVL · 1 Flash",
       icon: Zap,
-      borderColor: "#ef4444"
+      borderColor: "var(--severity-critical-dot)"
     },
     {
       title: "PAUSES EXECUTED",

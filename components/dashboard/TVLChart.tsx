@@ -38,7 +38,7 @@ export default function TVLChart() {
   if (!isMounted) return <div className="h-[360px] bg-surface border border-border-default rounded-[12px] w-full" />;
 
   return (
-    <div className="bg-surface border border-border-default rounded-[12px] p-6 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-shadow duration-200 mb-8">
+    <div className="bg-surface border border-border-default rounded-[12px] p-6 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-shadow duration-200">
       <div className="mb-6 flex items-start justify-between">
         <div>
           <h2 className="font-display font-semibold text-[18px] text-primary">Protocol TVL — Real Time Monitor</h2>
