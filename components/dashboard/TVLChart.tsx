@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Area, ComposedChart } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Area, ComposedChart, CartesianGrid } from 'recharts';
 import { formatUSD } from '@/lib/utils';
 import { TVLSnapshot } from '@/lib/types';
+import AddressBadge from '@/components/shared/AddressBadge';
+import { MOCK_PROTOCOL_ID } from '@/lib/constants';
 
 const INITIAL_DATA: TVLSnapshot[] = [
   { slot: 1040, tvl_usd: 1400000, timestamp: new Date(Date.now() - 40000).toISOString() },
@@ -33,37 +35,52 @@ export default function TVLChart() {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) return <div className="h-[360px] bg-surface border border-border-default rounded-xl w-full" />;
+  if (!isMounted) return <div className="h-[360px] bg-surface border border-border-default rounded-[12px] w-full" />;
 
   return (
-    <div className="bg-surface border border-border-default rounded-xl p-6 shadow-sm mb-8">
-      <div className="mb-6">
-        <h2 className="font-display font-semibold text-[18px] text-primary">Protocol TVL — Real Time Monitor</h2>
-        <span className="text-[13px] text-tertiary">10-slot rolling window · Updates every 5s</span>
+    <div className="bg-surface border border-border-default rounded-[12px] p-6 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-shadow duration-200 mb-8">
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h2 className="font-display font-semibold text-[18px] text-primary">Protocol TVL — Real Time Monitor</h2>
+          <span className="text-[13px] text-tertiary">10-slot rolling window · Updates every 5s</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold text-tertiary uppercase tracking-wider">Protocol</span>
+          <div className="bg-subtle border border-border-default rounded-full px-3 py-1 font-mono text-[12px] text-primary">
+            {MOCK_PROTOCOL_ID.slice(0, 6)}...{MOCK_PROTOCOL_ID.slice(-4)}
+          </div>
+        </div>
       </div>
       <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <ComposedChart data={data} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="tvlGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="rgba(37,99,235,0.12)" stopOpacity={1}/>
+                <stop offset="95%" stopColor="rgba(37,99,235,0)" stopOpacity={1}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} stroke="var(--border-default)" strokeDasharray="3 3" />
             <XAxis 
               dataKey="slot" 
               tickFormatter={(v) => `#${v}`} 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: 'var(--text-tertiary)', fontSize: 12, fontFamily: 'var(--font-mono)' }} 
+              tick={{ fill: 'var(--text-tertiary)', fontSize: 11, fontFamily: 'var(--font-mono)' }} 
               dy={10}
             />
             <YAxis 
               tickFormatter={(v) => formatUSD(v)} 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: 'var(--text-tertiary)', fontSize: 12 }} 
+              tick={{ fill: 'var(--text-tertiary)', fontSize: 11, fontFamily: 'var(--font-mono)' }} 
               dx={-10}
             />
             <Tooltip 
               contentStyle={{ borderRadius: '8px', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-md)' }}
-              labelStyle={{ fontFamily: 'var(--font-mono)', color: 'var(--text-tertiary)', marginBottom: '8px' }}
+              labelStyle={{ fontFamily: 'var(--font-mono)', color: 'var(--text-tertiary)', marginBottom: '8px', fontSize: '12px' }}
               labelFormatter={(v) => `Slot #${v}`}
-              formatter={(val: any) => [<span key="val" className="font-medium text-primary">{formatUSD(Number(val))}</span>, 'TVL']}
+              formatter={(val: any) => [<span key="val" className="font-medium text-primary text-[14px]">{formatUSD(Number(val))}</span>, 'TVL']}
             />
             
             {/* Find alerts and draw vertical lines */}
@@ -71,14 +88,14 @@ export default function TVLChart() {
               <ReferenceLine 
                 key={d.slot} 
                 x={d.slot} 
-                stroke="var(--status-paused)" 
+                stroke="#ef4444" 
                 strokeDasharray="4 4" 
-                label={{ position: 'top', value: 'ALERT FIRED', fill: 'var(--status-paused)', fontSize: 11, fontWeight: 700 }} 
+                label={{ position: 'top', value: 'ALERT FIRED', fill: '#ef4444', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600 }} 
               />
             ))}
 
-            <Area type="monotone" dataKey="tvl_usd" fill="var(--brand-light)" fillOpacity={0.3} stroke="none" />
-            <Line type="monotone" dataKey="tvl_usd" stroke="var(--brand-primary)" strokeWidth={2} dot={false} activeDot={{ r: 6, fill: 'var(--brand-primary)', stroke: '#fff', strokeWidth: 2 }} />
+            <Area type="monotone" dataKey="tvl_usd" fill="url(#tvlGradient)" stroke="none" />
+            <Line type="monotone" dataKey="tvl_usd" stroke="var(--brand-primary)" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: 'var(--brand-primary)', stroke: '#fff', strokeWidth: 2 }} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>

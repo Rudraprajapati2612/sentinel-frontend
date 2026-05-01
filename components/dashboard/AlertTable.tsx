@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { Alert } from '@/lib/types';
 import RuleBadge from '@/components/shared/RuleBadge';
 import SeverityBadge from '@/components/shared/SeverityBadge';
 import ExplorerLink from '@/components/shared/ExplorerLink';
 import AddressBadge from '@/components/shared/AddressBadge';
 import StatusIndicator from '@/components/shared/StatusIndicator';
+import { X } from 'lucide-react';
+import { getRuleTitle, formatUSD } from '@/lib/utils';
+import { AnimatePresence, motion } from 'motion/react';
 
 const ALERTS: Alert[] = [
   {
@@ -35,45 +39,47 @@ const ALERTS: Alert[] = [
 ];
 
 export default function AlertTable() {
-  return (
-    <div className="mt-8">
-      <div className="mb-4">
-        <h2 className="font-display font-semibold text-[18px] text-primary">Alert History</h2>
-      </div>
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
-      <div className="bg-surface border border-border-default rounded-xl shadow-sm overflow-x-auto">
+  return (
+    <div className="mt-[32px] lg:mt-0">
+      <div className="bg-surface border border-border-default rounded-[12px] shadow-[var(--shadow-sm)] overflow-hidden">
         <table className="w-full text-left border-collapse min-w-[900px]">
           <thead>
-            <tr className="bg-subtle border-b border-border-default text-[11px] text-tertiary font-bold tracking-wider uppercase">
-              <th className="py-4 px-6">ID</th>
-              <th className="py-4 px-6">Rule</th>
-              <th className="py-4 px-6">Severity</th>
-              <th className="py-4 px-6">At Risk</th>
-              <th className="py-4 px-6">Slot</th>
-              <th className="py-4 px-6">Time</th>
-              <th className="py-4 px-6">On-chain Tx</th>
-              <th className="py-4 px-6">Status</th>
+            <tr className="bg-subtle border-b border-border-default text-[12px] text-tertiary font-bold tracking-[0.06em] uppercase">
+              <th className="py-[10px] px-[20px] whitespace-nowrap">ID</th>
+              <th className="py-[10px] px-[20px] whitespace-nowrap">Rule</th>
+              <th className="py-[10px] px-[20px] whitespace-nowrap">Severity</th>
+              <th className="py-[10px] px-[20px] whitespace-nowrap">At Risk</th>
+              <th className="py-[10px] px-[20px] whitespace-nowrap">Slot</th>
+              <th className="py-[10px] px-[20px] whitespace-nowrap">Time</th>
+              <th className="py-[10px] px-[20px] whitespace-nowrap">On-chain Tx</th>
+              <th className="py-[10px] px-[20px] whitespace-nowrap">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-default text-[14px]">
             {ALERTS.map((alert) => (
-              <tr key={alert.id} className="hover:bg-black/[0.02] cursor-pointer transition-colors">
-                <td className="py-4 px-6 font-mono text-[12px] text-secondary">{alert.id}</td>
-                <td className="py-4 px-6">
+              <tr 
+                key={alert.id} 
+                className="hover:bg-subtle cursor-pointer transition-colors"
+                onClick={() => setSelectedAlert(alert)}
+              >
+                <td className="py-[14px] px-[20px] font-mono text-[12px] text-tertiary">{alert.id}</td>
+                <td className="py-[14px] px-[20px]">
                   <RuleBadge rule={alert.rule_triggered} />
                 </td>
-                <td className="py-4 px-6">
+                <td className="py-[14px] px-[20px]">
                   <SeverityBadge severity={alert.severity} />
                 </td>
-                <td className="py-4 px-6 font-medium text-primary">
+                <td className="py-[14px] px-[20px] font-semibold text-primary">
                   ${(alert.at_risk_usd / 1000).toFixed(0)}k
                 </td>
-                <td className="py-4 px-6 font-mono text-[12px] text-secondary">#{alert.slot}</td>
-                <td className="py-4 px-6 text-secondary">{alert.time_ago}</td>
-                <td className="py-4 px-6">
+                <td className="py-[14px] px-[20px] font-mono text-[12px] text-secondary">#{alert.slot}</td>
+                <td className="py-[14px] px-[20px] text-tertiary">{alert.time_ago}</td>
+                <td className="py-[14px] px-[20px]">
                   <ExplorerLink signature={alert.pause_tx_sig} />
                 </td>
-                <td className="py-4 px-6">
+                <td className="py-[14px] px-[20px]">
                   <StatusIndicator status={alert.status} showText />
                 </td>
               </tr>
@@ -88,6 +94,89 @@ export default function AlertTable() {
           </tbody>
         </table>
       </div>
+
+      <AnimatePresence>
+        {selectedAlert && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-primary/30 z-40 backdrop-blur-sm"
+              onClick={() => setSelectedAlert(null)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.25, ease: 'easeOut' }}
+              className="fixed right-0 top-0 h-screen w-[400px] bg-surface shadow-[var(--shadow-md)] border-l border-border-default z-50 overflow-y-auto flex flex-col"
+            >
+              <div className="p-6 border-b border-border-default flex items-center justify-between sticky top-0 bg-surface">
+                <div className="flex items-center gap-3">
+                  <h2 className="font-display font-semibold text-[18px] text-primary">Alert {selectedAlert.id}</h2>
+                  <SeverityBadge severity={selectedAlert.severity} />
+                </div>
+                <button 
+                  onClick={() => setSelectedAlert(null)}
+                  className="p-1.5 rounded bg-surface hover:bg-subtle text-secondary transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-8 flex-1">
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase text-tertiary tracking-wider mb-3">Rule Details</h4>
+                  <div className="bg-subtle border border-border-default rounded-[8px] p-4">
+                    <div className="font-semibold text-[14px] text-primary mb-1">{getRuleTitle(selectedAlert.rule_triggered)}</div>
+                    <RuleBadge rule={selectedAlert.rule_triggered} />
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase text-tertiary tracking-wider mb-3">Protocol</h4>
+                  <div className="flex items-center justify-between border-b border-border-default pb-2">
+                    <AddressBadge address={selectedAlert.protocol} chars={8} />
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase text-tertiary tracking-wider mb-3">Threat Context</h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] text-secondary">At Risk Amount</span>
+                      <span className="font-semibold text-primary">{formatUSD(selectedAlert.at_risk_usd)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] text-secondary">Detection Slot</span>
+                      <span className="font-mono text-[13px]">#{selectedAlert.slot}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] text-secondary">Timestamp</span>
+                      <span className="text-[13px] text-tertiary">{new Date(selectedAlert.created_at).toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase text-tertiary tracking-wider mb-3">Response Action</h4>
+                  <div className="bg-severity-critical-bg border border-severity-critical-border rounded-[8px] p-4 text-severity-critical-text text-[13px]">
+                    <div className="flex justify-between items-center mb-2">
+                      <strong className="font-semibold">Pause Executed</strong>
+                      <span className="font-mono text-[11px] opacity-80">(Program Instruction)</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-severity-critical-border/30">
+                      <span>Tx:</span>
+                      <ExplorerLink signature={selectedAlert.pause_tx_sig} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

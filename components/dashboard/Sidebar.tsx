@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, LayoutDashboard, History, Settings, ExternalLink } from 'lucide-react';
+import { Shield, LayoutDashboard, History, SlidersHorizontal, BookOpen } from 'lucide-react';
 import { WATCHER_PUBKEY, MOCK_PROTOCOL_ID, SENTINEL_STATE_PDA } from '@/lib/constants';
 import AddressBadge from '@/components/shared/AddressBadge';
 import StatusIndicator from '@/components/shared/StatusIndicator';
@@ -13,23 +13,23 @@ export default function Sidebar() {
   const links = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/alerts', label: 'Alert History', icon: History },
-    { href: '/controls', label: 'Controls', icon: Settings },
-    { href: '/docs', label: 'Integration Guide', icon: ExternalLink },
+    { href: '/controls', label: 'Controls', icon: SlidersHorizontal },
+    { href: '/integration', label: 'Integration Guide', icon: BookOpen },
   ];
 
   return (
     <aside className="w-[240px] fixed top-0 left-0 h-screen bg-surface border-r border-border-default flex flex-col z-40">
       <div className="p-6">
         <Link href="/" className="flex items-center gap-2 mb-1">
-          <Shield className="text-brand-primary" fill="currentColor" size={20} />
-          <span className="font-display font-semibold text-primary text-[16px]">SENTINEL_GUARD</span>
+          <Shield className="text-brand-primary flex-shrink-0" fill="currentColor" size={20} />
+          <span className="font-mono font-bold text-primary text-[13px] uppercase">SENTINEL_GUARD</span>
         </Link>
         <span className="text-tertiary text-[11px] font-mono ml-7 block">v1.0.0</span>
       </div>
 
       <div className="px-6 pb-6">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-2 h-2 rounded-full bg-status-watching animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-status-active animate-pulse" />
           <span className="text-[12px] font-medium text-secondary">Watcher Live</span>
         </div>
         <AddressBadge address={WATCHER_PUBKEY} chars={6} />
@@ -45,8 +45,8 @@ export default function Sidebar() {
               href={link.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors font-medium text-[14px] ${
                 active 
-                  ? 'bg-subtle text-brand-primary' 
-                  : 'text-secondary hover:bg-black/5 hover:text-primary'
+                  ? 'bg-subtle text-brand-primary border-l-[3px] border-brand-primary' 
+                  : 'text-secondary hover:bg-subtle border-l-[3px] border-transparent'
               }`}
             >
               <Icon size={18} />
@@ -56,7 +56,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-6 border-t border-border-default bg-black/[0.01]">
+      <div className="p-6 border-t border-border-default bg-surface mt-auto">
         <div className="text-[11px] font-bold tracking-wider uppercase text-tertiary mb-3">Protocol</div>
         
         <div className="mb-4">

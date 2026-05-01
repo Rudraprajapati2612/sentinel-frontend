@@ -7,7 +7,7 @@ import RuleBadge from '@/components/shared/RuleBadge';
 import SeverityBadge from '@/components/shared/SeverityBadge';
 import ExplorerLink from '@/components/shared/ExplorerLink';
 import { getRuleTitle } from '@/lib/utils';
-import { ShieldAlert } from 'lucide-react';
+import { Radar } from 'lucide-react';
 
 const INITIAL_ALERTS: Alert[] = [
   {
@@ -45,61 +45,46 @@ export default function AlertFeed() {
     return 'var(--severity-medium-border)';
   };
 
+  const hasHighSeverity = alerts.some(a => a.severity >= 75);
+
   return (
     <div className="flex flex-col h-full min-h-[500px]">
-      <div className="mb-4">
+      <div className="mb-4 flex items-center gap-3">
         <h2 className="font-display font-semibold text-[18px] text-primary">Live Alert Feed</h2>
-        <span className="text-[13px] text-tertiary">Newest first · Auto-refreshing every 2s</span>
+        {hasHighSeverity && <div className="w-2 h-2 rounded-full bg-status-paused animate-pulse" />}
       </div>
 
-      <div className="flex-1 space-y-4">
+      <div className="flex-1 space-y-3">
         <AnimatePresence>
           {alerts.map((alert) => (
             <motion.div
               key={alert.id}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-surface rounded-xl shadow-sm p-5 border-y border-r border-y-border-default border-r-border-default border-l-4"
-              style={{ borderLeftColor: getBorderColor(alert.rule_triggered) }}
+              className="bg-surface rounded-[10px] border border-border-default shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-shadow duration-200 p-[14px_16px] flex items-center justify-between gap-4"
+              style={{ borderLeft: `4px solid ${getBorderColor(alert.rule_triggered)}` }}
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex gap-2">
-                  <RuleBadge rule={alert.rule_triggered} />
-                  <SeverityBadge severity={alert.severity} />
+              {/* Left */}
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <SeverityBadge severity={alert.severity} />
+                <RuleBadge rule={alert.rule_triggered} />
+              </div>
+
+              {/* Center */}
+              <div className="flex-1 flex flex-col justify-center items-center">
+                <div className="font-bold text-[15px] text-primary">
+                  ${(alert.at_risk_usd / 1000).toFixed(1)}k at risk
                 </div>
+                <div className="font-mono text-[12px] text-secondary">
+                  #{alert.slot}
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="flex flex-col items-end gap-1 flex-shrink-0 text-right">
                 <span className="text-[12px] text-tertiary">{alert.time_ago}</span>
-              </div>
-
-              <h3 className="font-display font-semibold text-[16px] text-primary mb-4">
-                {getRuleTitle(alert.rule_triggered)}
-              </h3>
-
-              <div className="space-y-2 mb-5 font-mono text-[13px] text-secondary">
-                <div className="flex justify-between border-b border-border-default pb-2">
-                  <span className="text-tertiary">Protocol</span>
-                  <span className="truncate max-w-[200px]">{alert.protocol}</span>
-                </div>
-                <div className="flex justify-between border-b border-border-default py-2">
-                  <span className="text-tertiary">Slot</span>
-                  <span>#{alert.slot}</span>
-                </div>
-                <div className="flex justify-between border-b border-border-default py-2">
-                  <span className="text-tertiary">At risk</span>
-                  <span className="text-primary font-medium">${(alert.at_risk_usd / 1000).toFixed(1)}k USDC</span>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-tertiary">On-chain tx</span>
-                  <ExplorerLink signature={alert.pause_tx_sig} />
-                </div>
-              </div>
-
-              <div className="bg-subtle p-3 rounded-lg flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-status-paused animate-pulse" />
-                <span className="text-[12px] font-bold text-status-paused tracking-wide">
-                  {alert.status}
-                </span>
-                <span className="text-[12px] text-secondary ml-auto">
-                  Action taken
+                <span className="text-brand-primary text-[13px] font-medium hover:underline">
+                  <ExplorerLink signature={alert.pause_tx_sig} label="→ tx" type="tx" />
                 </span>
               </div>
             </motion.div>
@@ -107,12 +92,9 @@ export default function AlertFeed() {
         </AnimatePresence>
 
         {alerts.length === 0 && (
-          <div className="h-[200px] border-2 border-dashed border-border-default rounded-xl flex flex-col items-center justify-center text-tertiary">
-            <ShieldAlert size={32} className="mb-4 opacity-50" />
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-status-watching animate-pulse" />
-              <span className="text-[14px]">Watching for threats...</span>
-            </div>
+          <div className="h-[120px] rounded-[10px] border border-border-default bg-surface flex flex-col items-center justify-center text-tertiary">
+            <Radar size={24} className="mb-2 opacity-60" />
+            <span className="text-[13px]">Watching for threats...</span>
           </div>
         )}
       </div>
