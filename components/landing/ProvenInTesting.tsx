@@ -1,5 +1,8 @@
+'use client';
+
 import { Check } from 'lucide-react';
 import ExplorerLink from '../shared/ExplorerLink';
+import { motion, Variants } from 'framer-motion';
 
 const SCENARIOS = [
   { id: 1, type: "Normal deposits + 3.3% withdrawal", expected: "No alert", result: "Silent", tx: null },
@@ -9,52 +12,132 @@ const SCENARIOS = [
   { id: 5, type: "Slow 5%×8 cumulative bleed", expected: "TVL_VELOCITY", result: "Fires at slice 5", tx: "cooldown" },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
 export default function ProvenInTesting() {
   return (
-    <section className="py-24 bg-surface border-y border-border-default">
+    <section className="py-24 bg-[#eef1f8] overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-12">
-          <span className="text-brand-primary text-[12px] font-semibold tracking-[0.1em] uppercase mb-4 block">
-            BATTLE TESTED
-          </span>
-          <h2 className="font-display font-bold text-[36px] text-primary">
-            5 attack scenarios. All detected.
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-14 max-w-2xl relative z-10"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 border border-[#d6e1f6] shadow-sm mb-6 backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2563eb]"></span>
+            <span className="text-[#1e40af] text-[12px] font-semibold tracking-[0.08em] uppercase">
+              Battle Tested
+            </span>
+          </div>
+          <h2 className="font-display font-bold text-[40px] leading-[1.15] text-[#0f172a] tracking-tight mb-5">
+            5 attack scenarios. <br />
+            <span className="text-[#2563eb]">All detected instantly.</span>
           </h2>
-        </div>
+          <p className="text-[17px] leading-[1.65] text-[#475569] max-w-xl">
+            See how SentinelGuard&apos;s engine performs against real-world smart contract exploits and flash loan attacks with mathematically proven sub-second precision.
+          </p>
+        </motion.div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
-            <thead>
-              <tr className="bg-subtle border-y border-border-default text-sm text-secondary font-medium uppercase tracking-wider">
-                <th className="py-4 px-6 font-display">Scenario</th>
-                <th className="py-4 px-6 font-display">Attack Type</th>
-                <th className="py-4 px-6 font-display">Expected</th>
-                <th className="py-4 px-6 font-display">Result</th>
-                <th className="py-4 px-6 font-display">On-chain Pause</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-default text-[15px] text-primary font-body">
-              {SCENARIOS.map((row) => (
-                <tr key={row.id} className="hover:bg-subtle/50 transition-colors">
-                  <td className="py-5 px-6 text-tertiary">{row.id}</td>
-                  <td className="py-5 px-6">{row.type}</td>
-                  <td className="py-5 px-6 font-mono text-[13px]">{row.expected}</td>
-                  <td className="py-5 px-6 flex items-center gap-2 text-severity-safe-text">
-                    <Check size={16} /> {row.result}
-                  </td>
-                  <td className="py-5 px-6">
-                    {row.tx === 'cooldown' ? (
-                      <span className="text-tertiary italic text-sm">Cooldown active</span>
-                    ) : row.tx ? (
-                      <ExplorerLink signature={row.tx} />
-                    ) : (
-                      <span className="text-tertiary">N/A</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="relative">
+          {/* Glassmorphic Container */}
+          <div className="relative rounded-[28px] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.58),rgba(243,247,255,0.84))] p-3 md:p-6 shadow-[0_20px_56px_rgba(15,23,42,0.08)] backdrop-blur-sm overflow-x-auto custom-scrollbar">
+            
+            <div className="min-w-[900px]">
+              {/* Header */}
+              <div className="grid grid-cols-[60px_1.6fr_0.9fr_1.2fr_1.2fr] gap-4 px-6 py-4 text-[13px] font-semibold uppercase tracking-[0.1em] text-[#64748b]">
+                <div>#</div>
+                <div>Attack Type</div>
+                <div>Expected</div>
+                <div>Live Result</div>
+                <div>On-chain Action</div>
+              </div>
+
+              {/* Rows */}
+              <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-50px" }}
+                className="flex flex-col gap-1"
+              >
+                {SCENARIOS.map((row) => {
+                  const isSilent = row.result === "Silent";
+
+                  return (
+                    <motion.div 
+                      key={row.id} 
+                      variants={itemVariants}
+                      className="group relative grid grid-cols-[60px_1.6fr_0.9fr_1.2fr_1.2fr] gap-4 px-6 py-4 items-center rounded-[16px] hover:bg-white hover:shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition-all duration-300 border border-transparent hover:border-white/60 cursor-default overflow-hidden"
+                    >
+                      {/* Left Accent Bar */}
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[60%] w-[3px] bg-[#2563eb] rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      
+                      {/* Data Elements with Hover Translation */}
+                      <div className="text-[13px] font-mono text-[#94a3b8] group-hover:translate-x-1 transition-transform duration-300">
+                        0{row.id}
+                      </div>
+                      
+                      <div className="text-[15px] font-medium text-[#0f172a] group-hover:translate-x-1 transition-transform duration-300 delay-[20ms]">
+                        {row.type}
+                      </div>
+                      
+                      <div className="group-hover:translate-x-1 transition-transform duration-300 delay-[40ms]">
+                        <span className="inline-block px-2.5 py-1 rounded-[6px] bg-white/70 border border-[#e2e8f0] font-mono text-[12px] font-medium text-[#475569] shadow-sm">
+                          {row.expected}
+                        </span>
+                      </div>
+                      
+                      <div className="group-hover:translate-x-1 transition-transform duration-300 delay-[60ms]">
+                        <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors ${
+                          isSilent 
+                            ? "bg-[#f1f5f9] text-[#64748b] border border-transparent" 
+                            : "bg-[#eef4ff] text-[#1e40af] border border-[#d6e1f6] shadow-sm"
+                        }`}>
+                          {!isSilent && (
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2563eb] opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2563eb]"></span>
+                            </span>
+                          )}
+                          {isSilent && <Check size={14} className="text-[#94a3b8]" />}
+                          {row.result}
+                        </span>
+                      </div>
+                      
+                      <div className="group-hover:translate-x-1 transition-transform duration-300 delay-[80ms]">
+                        {row.tx === 'cooldown' ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f8fafc] text-[#64748b] text-[13px] font-medium border border-[#e2e8f0]">
+                            Cooldown Active
+                          </span>
+                        ) : row.tx ? (
+                          <ExplorerLink signature={row.tx} />
+                        ) : (
+                          <span className="text-[#94a3b8] text-[14px]">N/A</span>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
