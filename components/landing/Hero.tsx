@@ -52,7 +52,7 @@ export default function Hero() {
           </span>
           <h1 className="mb-5 max-w-4xl font-display text-[44px] font-bold leading-[0.98] tracking-[-0.05em] text-primary sm:text-[56px] lg:text-[72px]">
             Detect exploits.
-            <span className="block text-brand-primary">Pause protocols.</span>
+            <span className="block text-[#2563eb]">Pause protocols.</span>
             <span className="block">Save funds.</span>
           </h1>
           <p className="mb-8 max-w-xl text-[17px] leading-[1.65] text-secondary sm:text-[18px]">
@@ -64,7 +64,7 @@ export default function Hero() {
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center rounded-xl bg-brand-primary px-6 py-3 text-[15px] font-medium text-white shadow-[0_14px_34px_rgba(37,99,235,0.28)] transition-all hover:-translate-y-0.5 hover:bg-brand-dark hover:shadow-[0_18px_38px_rgba(29,78,216,0.34)]"
+                className="inline-flex items-center rounded-xl bg-[#2563eb] px-6 py-3 text-[15px] font-medium text-white shadow-[0_14px_34px_rgba(37,99,235,0.28)] transition-all hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_18px_38px_rgba(29,78,216,0.34)]"
               >
               Launch Dashboard &rarr;
               </Link>
@@ -123,7 +123,7 @@ export default function Hero() {
                     {alert.label}
                   </span>
                 </div>
-                <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-medium text-tertiary shadow-sm">{alert.time}</span>
+                <span className="rounded-full bg-white/90 border border-slate-200/60 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-600 shadow-sm">{alert.time}</span>
               </div>
 
               <div className="mb-5 rounded-2xl border border-white/80 bg-white/72 px-4 py-3 shadow-[0_12px_24px_rgba(15,23,42,0.05)]">

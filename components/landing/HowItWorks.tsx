@@ -154,13 +154,19 @@ export default function HowItWorks() {
   return (
     <section ref={sectionRef} className="relative bg-base py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-16 text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-16 text-center"
+        >
           <span className="mb-4 block text-[12px] font-semibold uppercase tracking-[0.1em] text-brand-primary">
             HOW IT WORKS
           </span>
           <h2 className="mb-4 font-display text-[36px] font-bold text-primary">From exploit to pause — autonomously</h2>
           <p className="text-[18px] text-secondary">No human in the loop. No delay. No mercy for attackers.</p>
-        </div>
+        </motion.div>
 
         <div className="hidden lg:block">
           <div className="relative h-[300vh]">
@@ -168,7 +174,7 @@ export default function HowItWorks() {
               <div className="absolute inset-x-[28%] top-10 h-20 rounded-full bg-brand-primary/6 blur-3xl" />
 
               <div className="relative z-10 h-[332px]">
-                <div className="absolute left-[26px] top-[60px] h-[212px] w-[66px] rounded-l-full border-l border-t border-b border-brand-border/28" />
+                <div className="absolute left-[28px] top-[52px] h-[228px] w-[32px] rounded-l-full border-l border-t border-b border-brand-border/28 -z-10" />
                 {STEPS.map((step, index) => (
                   <motion.div
                     key={step.id}
@@ -186,7 +192,7 @@ export default function HowItWorks() {
                       className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold transition-colors ${
                         activeStep === index
                           ? 'border-brand-border bg-brand-primary text-white shadow-[0_10px_24px_rgba(37,99,235,0.18)]'
-                          : 'border-border-default/80 bg-white/72 text-secondary'
+                          : 'border-border-default/80 bg-white text-secondary'
                       }`}
                     >
                       {step.id}
