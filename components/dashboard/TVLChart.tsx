@@ -88,9 +88,9 @@ export default function TVLChart() {
               <ReferenceLine 
                 key={d.slot} 
                 x={d.slot} 
-                stroke="#ef4444" 
+                stroke="var(--status-paused)" 
                 strokeDasharray="4 4" 
-                label={{ position: 'top', value: 'ALERT FIRED', fill: '#ef4444', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600 }} 
+                label={{ position: 'top', value: 'ALERT FIRED', fill: 'var(--status-paused)', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600 }} 
               />
             ))}
 
