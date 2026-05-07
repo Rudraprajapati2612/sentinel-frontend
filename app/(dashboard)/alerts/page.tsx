@@ -1,59 +1,67 @@
+'use client';
+
+import { useState } from 'react';
 import AlertTable from '@/components/dashboard/AlertTable';
-import { Search } from 'lucide-react';
+import CustomDropdown from '@/components/shared/CustomDropdown';
 
 export default function AlertsPage() {
+  const [ruleFilter, setRuleFilter] = useState('All Rules');
+  const [severityFilter, setSeverityFilter] = useState('All Severities');
+
   return (
-    <div className="flex flex-col">
-      <div className="mb-2">
-        <h1 className="font-display font-bold text-[28px] text-primary">Alert History</h1>
-        <p className="text-secondary text-[16px] mt-1">Full log of all detections and automated responses across monitored protocols.</p>
-      </div>
-      
-      <div className="flex items-center gap-[12px] my-[20px]">
-        <select className="h-[38px] bg-surface border border-border-default rounded-lg px-[12px] text-[14px] text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
-          <option>All Rules</option>
-          <option>Flash Loan + Drain</option>
-          <option>TVL Velocity Drop</option>
-          <option>Bridge Outflow Spike</option>
-        </select>
-        <select className="h-[38px] bg-surface border border-border-default rounded-lg px-[12px] text-[14px] text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
-          <option>All Severities</option>
-          <option>Critical (&gt;=90)</option>
-          <option>High (&gt;=75)</option>
-          <option>Medium (&gt;=60)</option>
-        </select>
-        <div className="flex-1 relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary" />
-          <input 
-            type="text" 
-            placeholder="Search by ID or tx signature..." 
-            className="w-full h-[38px] bg-surface border border-border-default rounded-lg pl-9 pr-3 text-[14px] text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+    <div className="flex flex-col pt-2">
+      <div className="flex items-center justify-between mb-[24px]">
+        <div className="flex items-center gap-[12px]">
+          <CustomDropdown 
+            value={ruleFilter} 
+            onChange={setRuleFilter} 
+            options={['All Rules', 'Flash Loan + Drain', 'TVL Velocity Drop', 'Bridge Outflow Spike']} 
+          />
+          <CustomDropdown 
+            value={severityFilter} 
+            onChange={setSeverityFilter} 
+            options={['All Severities', 'Critical (>=90)', 'High (>=75)', 'Medium (>=60)']} 
           />
         </div>
-        <button className="bg-brand-primary text-white font-medium text-[14px] px-[16px] py-[8px] rounded-lg hover:bg-brand-dark transition-colors ml-auto shadow-sm">
-          Export CSV
+        <button className="bg-[var(--bg-surface)] border border-[var(--border-default)] text-primary font-medium text-[13px] px-[16px] py-[8px] rounded-xl hover:bg-subtle transition-colors shadow-sm flex items-center gap-2">
+          Hide Rules Reference
         </button>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <div className="flex-1 min-w-0">
-          <AlertTable />
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex-1 min-w-0 relative">
+          <AlertTable ruleFilter={ruleFilter} severityFilter={severityFilter} />
         </div>
-        <div className="w-full lg:w-[280px]">
-          <div className="bg-surface border border-border-default rounded-[12px] p-[20px] shadow-[var(--shadow-sm)] sticky top-24">
-            <h3 className="font-display font-semibold text-[16px] text-primary mb-4">Detection Rules</h3>
-            <div className="space-y-[16px]">
-              <div className="border-l-[3px] border-[#ef4444] pl-3">
-                <div className="text-[14px] font-semibold text-primary mb-1">Flash Loan + Drain</div>
-                <div className="text-[13px] text-secondary">Detects flash borrow followed by TVL drop within the same slot window.</div>
+        <div className="w-full lg:w-[320px] shrink-0">
+          <div className="bg-[var(--bg-base)] border border-[var(--border-default)] rounded-[12px] p-[24px]">
+            <h3 className="font-display font-bold text-[16px] text-primary mb-5">Detection Rules Reference</h3>
+            <div className="space-y-[24px]">
+              <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[8px] p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[12px] font-bold text-tertiary">R1</span>
+                  <div className="text-[14px] font-bold text-primary">Flash Loan + Drain</div>
+                </div>
+                <div className="text-[13px] text-secondary leading-relaxed">
+                  Fires when flash loan evidence (confidence &gt; 50%) is found within the same 10-slot window as a TVL drop exceeding 20%. Score is weighted by confidence and slot distance.
+                </div>
               </div>
-              <div className="border-l-[3px] border-[#f97316] pl-3">
-                <div className="text-[14px] font-semibold text-primary mb-1">TVL Velocity Drop</div>
-                <div className="text-[13px] text-secondary">Detects rapid TVL drop {'>'} 20% within a 10-slot rolling window.</div>
+              <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[8px] p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[12px] font-bold text-tertiary">R2</span>
+                  <div className="text-[14px] font-bold text-primary">TVL Velocity</div>
+                </div>
+                <div className="text-[13px] text-secondary leading-relaxed">
+                  Fires when TVL drops more than 20% within a 10-slot rolling window. Score scales linearly: 20% &rarr; 60, 50% &rarr; 80, 80% &rarr; 99. Immune to false positives from normal deposit/withdrawal cycles.
+                </div>
               </div>
-              <div className="border-l-[3px] border-[#eab308] pl-3">
-                <div className="text-[14px] font-semibold text-primary mb-1">Bridge Outflow Spike</div>
-                <div className="text-[13px] text-secondary">Detects funds leaving Solana via known bridge programs.</div>
+              <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[8px] p-4 opacity-70">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[12px] font-bold text-tertiary">R3</span>
+                  <div className="text-[14px] font-bold text-primary">Bridge Outflow Spike</div>
+                </div>
+                <div className="text-[13px] text-secondary leading-relaxed">
+                  Fires when token outflows through known Solana bridge programs exceed a configurable multiplier of the 30-slot average outflow baseline.
+                </div>
               </div>
             </div>
           </div>

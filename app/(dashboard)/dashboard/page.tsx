@@ -1,35 +1,71 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import StatsRow from '@/components/dashboard/StatsRow';
 import TVLChart from '@/components/dashboard/TVLChart';
 import AlertFeed from '@/components/dashboard/AlertFeed';
-import { RefreshCw } from 'lucide-react';
+import { Calendar } from 'lucide-react';
+import CustomDropdown from '@/components/shared/CustomDropdown';
 
 export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState('Last 24 Hours');
+
+  useEffect(() => {
+    // Simulate initial data fetching
+    const timer = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="flex flex-col">
-      <header className="flex items-center justify-between mb-[24px]">
-        <h1 className="font-display font-bold text-[24px] text-primary">Dashboard</h1>
-        
-        <div className="flex items-center gap-[24px]">
-          <span className="text-[13px] text-tertiary font-mono">
-            Last updated: 3s ago
-          </span>
-          <div className="flex items-center gap-2 bg-subtle px-3 py-1.5 rounded-full border border-brand-light">
-            <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
-            <span className="text-[12px] font-semibold text-brand-primary tracking-[0.05em] uppercase">Live</span>
-          </div>
-          <button className="text-[13px] font-medium px-[14px] py-[6px] border border-border-default rounded-[8px] flex items-center gap-2 hover:bg-black/5 transition-colors bg-surface shadow-sm">
-            <RefreshCw size={14} />
-            Refresh
-          </button>
-        </div>
-      </header>
-
-      <StatsRow />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 mt-6 items-start">
-        <TVLChart />
-        <AlertFeed />
+      {/* Date Range Picker Control */}
+      <div className="flex justify-end mb-6">
+        <CustomDropdown 
+          value={timeRange} 
+          onChange={setTimeRange} 
+          options={['Last 24 Hours', 'Last 7 Days', 'Last 30 Days', 'All Time']} 
+          icon={<Calendar size={14} className="text-secondary" />}
+        />
       </div>
+
+      {isLoading ? (
+        <div className="space-y-6">
+          {/* Skeleton Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-surface border border-border-default rounded-[16px] p-[24px] h-[120px] animate-pulse">
+                <div className="w-24 h-4 bg-border-default rounded mb-4"></div>
+                <div className="w-16 h-8 bg-border-default rounded"></div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Skeleton Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 items-start">
+            <div className="bg-surface border border-border-default rounded-[16px] h-[400px] animate-pulse p-6">
+              <div className="w-32 h-6 bg-border-default rounded mb-8"></div>
+              <div className="w-full h-[280px] bg-subtle rounded"></div>
+            </div>
+            <div className="bg-surface border border-border-default rounded-[16px] h-[400px] animate-pulse p-6">
+              <div className="w-24 h-6 bg-border-default rounded mb-6"></div>
+              <div className="space-y-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="w-full h-16 bg-subtle rounded"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <StatsRow />
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 mt-6 items-start">
+            <TVLChart />
+            <AlertFeed />
+          </div>
+        </>
+      )}
     </div>
   );
 }
